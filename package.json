@@ -1,0 +1,76 @@
+{
+  "name": "@yldfi/maverick-v2-math",
+  "version": "1.0.0",
+  "packageManager": "pnpm@11.5.1",
+  "description": "Off-chain TypeScript implementations of Maverick V2 AMM math for local quote calculations",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./rpc": {
+      "types": "./dist/rpc/index.d.ts",
+      "import": "./dist/rpc/index.mjs",
+      "require": "./dist/rpc/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "pnpm build",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "bash -c 'pnpm type-check'"
+    ]
+  },
+  "keywords": [
+    "maverick",
+    "defi",
+    "amm",
+    "concentrated-liquidity",
+    "math",
+    "ethereum"
+  ],
+  "author": "michaeldim",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yldfi/maverick-v2-math.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yldfi/maverick-v2-math/issues"
+  },
+  "homepage": "https://github.com/yldfi/maverick-v2-math#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "@eslint/js": "^9.0.0",
+    "@types/node": "25.9.2",
+    "@vitest/coverage-v8": "4.1.8",
+    "eslint": "9.39.4",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "8.61.0",
+    "vitest": "4.1.8"
+  }
+}
