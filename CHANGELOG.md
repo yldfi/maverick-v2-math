@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/yldfi/maverick-v2-math/compare/v1.0.0...v1.1.0) (2026-07-15)
+
+
+### Features
+
+* initial commit ([2d0a964](https://github.com/yldfi/maverick-v2-math/commit/2d0a9649cacd06834fef3f4558bc39cc3c832d21))
+
+
+### Bug Fixes
+
+* traverse empty tick gaps ([3dc6082](https://github.com/yldfi/maverick-v2-math/commit/3dc60822ae4fa8196940f6e6d0b57313e472bcbe))
+
 ## 1.0.0 (2026-06-16)
 
 ### Features
