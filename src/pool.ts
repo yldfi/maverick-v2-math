@@ -15,6 +15,18 @@ export type TickFetcher = (tick: number) => TickState | null;
 
 const TICK_SEARCH_LIMIT = 200;
 
+// Crossing an empty tick consumes no input but moves the virtual price to its edge.
+function movePriceAcrossEmptyGap(
+  sqrtPrice: bigint,
+  sqrtLowerPrice: bigint,
+  sqrtUpperPrice: bigint,
+  tokenAIn: boolean,
+): bigint {
+  if (tokenAIn && sqrtPrice < sqrtLowerPrice) return sqrtLowerPrice;
+  if (!tokenAIn && sqrtPrice > sqrtUpperPrice) return sqrtUpperPrice;
+  return sqrtPrice;
+}
+
 function findStartingTick(poolSqrtPrice: bigint, tickSpacing: number, _getTick: TickFetcher): number {
   let tick = 0;
   const maxSearch = 10000;
@@ -62,6 +74,12 @@ export function simulateSwapExactIn(
     if (absTick > MAX_TICK_32) { reachedLimit = true; break; }
 
     const { sqrtLowerPrice, sqrtUpperPrice } = tickSqrtPrices(tickSpacing, currentTick);
+    currentSqrtPrice = movePriceAcrossEmptyGap(
+      currentSqrtPrice,
+      sqrtLowerPrice,
+      sqrtUpperPrice,
+      tokenAIn,
+    );
 
     if (currentSqrtPrice < sqrtLowerPrice || currentSqrtPrice > sqrtUpperPrice) {
       currentTick += direction;
@@ -163,6 +181,12 @@ export function simulateSwapExactOut(
     if (absTick > MAX_TICK_32) { reachedLimit = true; break; }
 
     const { sqrtLowerPrice, sqrtUpperPrice } = tickSqrtPrices(tickSpacing, currentTick);
+    currentSqrtPrice = movePriceAcrossEmptyGap(
+      currentSqrtPrice,
+      sqrtLowerPrice,
+      sqrtUpperPrice,
+      tokenAIn,
+    );
 
     if (currentSqrtPrice < sqrtLowerPrice || currentSqrtPrice > sqrtUpperPrice) {
       currentTick += direction;

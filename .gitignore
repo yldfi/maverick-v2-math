@@ -6,6 +6,7 @@ coverage/
 .env
 .env.local
 *.mjs
+!commitlint.config.mjs
+!eslint.config.mjs
 AGENTS.md
 scripts/
-

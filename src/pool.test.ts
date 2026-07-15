@@ -163,6 +163,56 @@ describe('simulateSwapExactIn', () => {
     expect(result.tickDeltas[0].tick).toBe(0);
     expect(result.amountOut).toBe(reserveB0);
   });
+
+  it('crosses an empty tick gap before consuming deeper liquidity (B→A)', () => {
+    const sqrtMinus2Lower = tickSqrtPrice(tickSpacing, -2);
+    const sqrtMinus2Upper = tickSqrtPrice(tickSpacing, -1);
+    const LMinus2 = 6000n * ONE;
+    const reserveAMinus2 = 100n * ONE;
+    const reserveBMinus2 =
+      (LMinus2 * (sqrtMinus2Upper - sqrtMinus2Lower)) / ONE;
+    const getTickAcrossGap: TickFetcher = (tick) => {
+      if (tick === 0) {
+        return {
+          reserveA: reserveA0,
+          reserveB: reserveB0,
+          totalSupply: L0,
+          binIdsByTick: [],
+        };
+      }
+      if (tick === -2) {
+        return {
+          reserveA: reserveAMinus2,
+          reserveB: reserveBMinus2,
+          totalSupply: LMinus2,
+          binIdsByTick: [],
+        };
+      }
+      return null;
+    };
+    const amountToDrain = drainAmount(
+      reserveA0,
+      reserveB0,
+      sqrt0Lower,
+      sqrt0Upper,
+      poolSqrtPrice,
+      fee,
+      false,
+      1000n,
+    );
+
+    const result = simulateSwapExactIn(
+      poolSnapshot,
+      config,
+      getTickAcrossGap,
+      amountToDrain,
+      false,
+    );
+
+    expect(result.tickDeltas.map(({ tick }) => tick)).toEqual([0, -2]);
+    expect(result.amountOut).toBeGreaterThan(reserveA0);
+    expect(result.excess).toBe(0n);
+  });
 });
 
 describe('simulateSwapExactOut', () => {
@@ -274,4 +324,112 @@ describe('simulateSwapExactOut', () => {
     expect(result.tickDeltas[1].tick).toBe(-1);
     expect(result.endTick).toBe(-1);
   });
+
+  it('crosses an empty tick gap before consuming deeper liquidity (B→A)', () => {
+    const sqrtMinus2Lower = tickSqrtPrice(tickSpacing, -2);
+    const sqrtMinus2Upper = tickSqrtPrice(tickSpacing, -1);
+    const LMinus2 = 6000n * ONE;
+    const reserveAMinus2 = 100n * ONE;
+    const reserveBMinus2 =
+      (LMinus2 * (sqrtMinus2Upper - sqrtMinus2Lower)) / ONE;
+    const gapMap = new Map<number, TickState>([
+      [
+        0,
+        {
+          reserveA: reserveA0,
+          reserveB: reserveB0,
+          totalSupply: L0,
+          binIdsByTick: [],
+        },
+      ],
+      [
+        -2,
+        {
+          reserveA: reserveAMinus2,
+          reserveB: reserveBMinus2,
+          totalSupply: LMinus2,
+          binIdsByTick: [],
+        },
+      ],
+    ]);
+
+    const result = simulateSwapExactOut(
+      poolSnapshot,
+      config,
+      (tick) => gapMap.get(tick) ?? null,
+      reserveA0 + 1n,
+      false,
+    );
+
+    expect(result.tickDeltas.map(({ tick }) => tick)).toEqual([0, -2]);
+    expect(result.amountOut).toBe(reserveA0 + 1n);
+    expect(result.excess).toBe(0n);
+  });
+});
+
+describe('block 25535942 movement-bin gap regression', () => {
+  const pool: PoolSnapshot = {
+    poolSqrtPrice: 1537228310291990367n,
+    activeTick: 172,
+    reserveA: 26816174501757401528987n,
+    reserveB: 5278284941046842543979n,
+    protocolFeeRatioD3: 0,
+  };
+  const config: PoolConfig = {
+    tickSpacing: 50,
+    feeAIn: 2000000000000000n,
+    feeBIn: 1000000000000000n,
+    protocolFeeRatioD3: 0,
+    tokenAScale: 1n,
+    tokenBScale: 1n,
+    kinds: 15,
+  };
+  const ticks = new Map<number, TickState>([
+    [
+      156,
+      {
+        reserveA: 25886246004570669164213n,
+        reserveB: 0n,
+        totalSupply: 17066534153794224085290n,
+        binIdsByTick: [14],
+      },
+    ],
+    [
+      172,
+      {
+        reserveA: 2832387545629078612n,
+        reserveB: 1198301907250354964852n,
+        totalSupply: 1848513144769664888600n,
+        binIdsByTick: [30],
+      },
+    ],
+  ]);
+
+  it.each([
+    [100000000000000000000n, 219212996698589350629n],
+    [250000000000000000000n, 547708162185547002222n],
+    [3280256491728931913728n, 7179417142452204409291n],
+    [5000000000000000000000n, 10939299208604763180505n],
+  ])(
+    'matches the official quoter across the empty ticks for %s wei input',
+    (amountIn, expectedAmountOut) => {
+      const result = simulateSwapExactIn(
+        pool,
+        config,
+        (tick) => ticks.get(tick) ?? null,
+        amountIn,
+        false,
+      );
+
+      expect(result.amountIn).toBe(amountIn);
+      const outputDiff =
+        result.amountOut > expectedAmountOut
+          ? result.amountOut - expectedAmountOut
+          : expectedAmountOut - result.amountOut;
+      expect(outputDiff).toBeLessThanOrEqual(1_000_000n);
+      expect(result.tickDeltas.map(({ tick }) => tick)).toEqual([172, 156]);
+      expect(result.endTick).toBe(156);
+      expect(result.excess).toBe(0n);
+    },
+  );
 });
