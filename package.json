@@ -1,6 +1,6 @@
 {
   "name": "@yldfi/maverick-v2-math",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "packageManager": "pnpm@11.5.1",
   "description": "Off-chain TypeScript implementations of Maverick V2 AMM math for local quote calculations",
   "main": "dist/index.js",
