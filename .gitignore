@@ -9,4 +9,10 @@ coverage/
 !commitlint.config.mjs
 !eslint.config.mjs
 AGENTS.md
-scripts/
+scripts/*
+# ...except the published-package compatibility check, which CI runs
+!scripts/compat/
+!scripts/compat/*.mjs
+
+# Published-package compatibility check cache
+.compat/
