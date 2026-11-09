@@ -16,3 +16,6 @@ scripts/*
 
 # Published-package compatibility check cache
 .compat/
+
+# Claude Code local settings (may contain permission rules with secrets)
+.claude/settings.local.json
