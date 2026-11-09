@@ -1,10 +1,18 @@
-![@yldfi/maverick-v2-math](logo-128.png)
+<p align="center">
+  <img src="logo-128.png" alt="yldfi" width="128" height="128">
+</p>
 
-# @yldfi/maverick-v2-math
+<h1 align="center">@yldfi/maverick-v2-math</h1>
 
-Off-chain TypeScript implementation of [Maverick V2](https://maverick.xyz/) AMM swap math for gas-free quote calculations.
+<p align="center">
+  Off-chain TypeScript implementation of <a href="https://maverick.xyz/">Maverick V2</a> AMM swap math for gas-free quote calculations
+</p>
 
-[![npm version](https://badge.fury.io/js/@yldfi%2Fmaverick-v2-math.svg)](https://www.npmjs.com/package/@yldfi/maverick-v2-math) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <a href="https://www.npmjs.com/package/@yldfi/maverick-v2-math"><img src="https://badge.fury.io/js/@yldfi%2Fmaverick-v2-math.svg" alt="npm version"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://socket.dev/npm/package/@yldfi/maverick-v2-math"><img src="https://badge.socket.dev/npm/package/@yldfi/maverick-v2-math/1.1.1" alt="Socket Badge"></a> <!-- x-release-please-version -->
+</p>
 
 ## Features
 
